@@ -4,8 +4,6 @@ import math
 from collections import Counter
 import pyotp
 
-
-
 #Προσθήκη Salt
 def add_Salt(FileName):
     #Δημιουργία τυχαίου Salt 16Bytes
@@ -17,6 +15,8 @@ def add_Salt(FileName):
     saltedData=salt+data    
     return salt,saltedData
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 #Ταυτοποίηση με 2FA (Two-Factor Authentication) 
 #για να διασφαλίσουμε ότι μόνο εξουσιοδοτημένοι χρήστες μπορούν να υπολογίσουν hash, 
@@ -36,6 +36,7 @@ def auth_2FA():
     else:
         print("Λάθος κωδικός 2FA.")
         return False
+    
     
 #Υπολογισμός της εντροπίας ενός αρχείου
 def calculate_entyropy(file_name):
@@ -95,27 +96,27 @@ def hash_integrityCheck(hashFile, giveFile, algorithm):
     else:
         print("Το αρχείο έχει αλλοιωθεί")
 
-
 #Δημιουργία ονόματος αρχείου hash
 def createHashFileName(giveFile,algorithm):
     #Δημιουργία ονόματος αρχείου hash με βάση το όνομα του αρχείου και τον αλγόριθμο που χρησιμοποιήθηκε
     hashFileName=f"{giveFile}_{algorithm}.hash"
     return hashFileName
 
-
 #Αποθήκευση των hash σε αρχείο .hash αλλα και την προσθήκη Salt
 def saveHash(hashFile,salt,hashValue):
    
    with open(hashFile,"w") as f:
      f.write(salt.hex()+"\n")
-     f.write(hashValue)
+     f.write(hashValue+"\n")
+     f.write("line 1: Salt \n")
+     f.write("line 2: Salt+Hash \n")
 
    print(f"Το hash αποθηκεύτηκε στο αρχείο {hashFile}")
 
 #Το menu επιλογών για τον χρήστη
 def menu():
 
-    
+    clear_screen()
     print("\n" + "="*75)
     print("!!! ΠΡΟΣΟΧΗ: Όλες οι επιλογές απαιτούν ταυτοποίηση με 2FA !!!")
     print("!!! Εάν θες να αποφύγεις την επαναληπτική ταυτοποίηση 2FA !!!")
@@ -132,7 +133,8 @@ def menu():
 
 #Το menu επιλογών για τον χρήστη για να επιλέξει τον αλγόριθμο που θέλει να χρησιμοποιήσει
 def menu_algorithms():
-
+    
+    clear_screen()
     print("\n" + "="*30)
     print("  ΜΕΝΟΥ ΕΠΙΛΟΓΩΝ ΑΛΓΟΡΙΘΜΟΥ")
     print("="*30)
@@ -144,8 +146,15 @@ def menu_algorithms():
     print("-"*30)
 
 #Το menu επιλογών για τον χρήστη για να επιλέξει ποιο hash θέλει να χρησιμοποιήσει για τον έλεγχο ακεραιότητας του αρχείου
-def menu_integrityCheck():
+def menu_integrityCheck(hashFiles):
 
+    clear_screen()
+    print("="*30)
+    print("   ΔΙΑΘΕΣΙΜΑ ΑΡΧΕΙΑ HASH ")
+    print("  ΓΙΑ ΕΛΕΓΧΟ ΑΚΕΡΑΙΟΤΗΤΑΣ:")
+    print("="*30)
+    for f in hashFiles:
+        print(f"-->{f}")
     print("\n" + "="*30)
     print("  ΜΕΝΟΥ ΕΠΙΛΟΓΩΝ ΑΛΓΟΡΙΘΜΟΥ")
     print("    ΈΛΕΓΧΟΣ ΑΚΕΡΑΙΟΤΗΤΑΣ")
@@ -190,7 +199,7 @@ while True:
     if epilogi==1:
         
         if check or auth_2FA():
-
+            input("\nΠατήστε Enter για συνέχεια...")
             menu_algorithms()
             #Επιλογή αλγορίθμου και υπολογισμός hash
             algSelect=int(input("--->"))
@@ -203,6 +212,8 @@ while True:
                 hashMD5=hashlib.md5(readFileSalted).hexdigest()
                 print(f"Το MD5 hash του {giveFile} είναι:{hashMD5}")
                 saveHash(file_md5,salt,hashMD5)
+                input("\nΠατήστε Enter για συνέχεια...")
+
                 
 
             #υπολογισμός SHA256 hash
@@ -213,6 +224,8 @@ while True:
                 hashSHA256=hashlib.sha256(readFileSalted).hexdigest()
                 print(f"Το SHA256 hash του {giveFile} είναι:{hashSHA256}")
                 saveHash(file_sha256,salt,hashSHA256)
+                input("\nΠατήστε Enter για συνέχεια...")
+
                 
 
             #υπολογισμός SHA3 hash
@@ -223,6 +236,8 @@ while True:
                 hashSHA3=hashlib.sha3_256(readFileSalted).hexdigest()
                 print(f"Το SHA3 hash του {giveFile} είναι:{hashSHA3}")  
                 saveHash(file_sha3,salt,hashSHA3)
+                input("\nΠατήστε Enter για συνέχεια...")
+
                 
             elif algSelect==4:
             
@@ -232,6 +247,8 @@ while True:
                 hashSHA256double=hashlib.sha256(hashSHA256.encode()).hexdigest()
                 print(f"Το διπλό SHA256 hash του {giveFile} είναι:{hashSHA256double}")
                 saveHash(file_sha256double,salt,hashSHA256double)
+                input("\nΠατήστε Enter για συνέχεια...")
+
                 
             #υπολογισμός όλων των hash
             elif algSelect==5:
@@ -256,7 +273,8 @@ while True:
                 hashSHA256double=hashlib.sha256(hashSHA256.encode()).hexdigest()
                 print(f"Το διπλό SHA256 hash του {giveFile} είναι:{hashSHA256double}")
                 saveHash(file_sha256double,salt,hashSHA256double)
-            
+                input("\nΠατήστε Enter για συνέχεια...")
+
 
                 
                 
@@ -268,12 +286,14 @@ while True:
                 algSelect=int(input("--->"))
         else:
             print("Η ταυτοποίηση με 2FA απέτυχε, δεν μπορείς να υπολογίσεις hash.")
+            input("\nΠατήστε Enter για να ξαναπροσπαθήσεις...")
             continue
     
     #Επιλογή ελέγχου ακεραιότητας
     elif epilogi==2:
         
         if check or auth_2FA():
+            input("\nΠατήστε Enter για συνέχεια...")
             #Έλεγχος για αρχεία hash στον τρέχοντα φάκελο 
             hashFiles = [f for f in os.listdir() if f.endswith(".hash")]
 
@@ -281,14 +301,7 @@ while True:
             # και ζητάμε από τον χρήστη να επιλέξει ποιο hash θέλει να χρησιμοποιήσει για τον έλεγχο ακεραιότητας του αρχείου.
             if hashFiles:
 
-                print("="*30)
-                print("   ΔΙΑΘΕΣΙΜΑ ΑΡΧΕΙΑ HASH ")
-                print("  ΓΙΑ ΕΛΕΓΧΟ ΑΚΕΡΑΙΟΤΗΤΑΣ:")
-                print("="*30)
-                for f in hashFiles:
-                    print(f"-->{f}")
-
-                menu_integrityCheck()
+                menu_integrityCheck(hashFiles)
                 hashFileSelect=int(input())
 
                 #Ξανα ανοίγουμε το αρχείο σε περίπτωση που ο χρήστης έχει επιλέξει έλεγχο ακεραιότητας την στιγμή που τρέχει το πρόγραμμα και έχει τροποποιήσει το αρχείο,
@@ -301,21 +314,29 @@ while True:
                 if hashFileSelect==1:
                     
                     hash_integrityCheck(file_md5,giveFile,"md5")
+                    input("\nΠατήστε Enter για συνέχεια...")
+
 
                 elif hashFileSelect==2:
 
                     #Υπολογισμός του τρέχοντος SHA256 hash του αρχείου και ελεγχος της ακεραιότητας συγκρίνοντας το τρέχον hash με το αποθηκευμένο hash
                     hash_integrityCheck(file_sha256,giveFile,"sha256")
+                    input("\nΠατήστε Enter για συνέχεια...")
+
 
                 elif hashFileSelect==3:
 
                     #Υπολογισμός του τρέχοντος SHA3 hash του αρχείου και ελεγχος της ακεραιότητας συγκρίνοντας το τρέχον hash με το αποθηκευμένο hash
                     hash_integrityCheck(file_sha3,giveFile,"sha3")
+                    input("\nΠατήστε Enter για συνέχεια...")
+
 
                 elif hashFileSelect==4:
 
                     #Υπολογισμός του τρέχοντος διπλού SHA256 hash του αρχείου και ελεγχος της ακεραιότητας συγκρίνοντας το τρέχον hash με το αποθηκευμένο hash
                     hash_integrityCheck(file_sha256double,giveFile,"sha256double")
+                    input("\nΠατήστε Enter για συνέχεια...")
+
 
                 elif hashFileSelect==5:
 
@@ -328,28 +349,35 @@ while True:
                     hash_integrityCheck(file_sha3,giveFile,"sha3") 
 
                     hash_integrityCheck(file_sha256double,giveFile,"sha256double")
+                    input("\nΠατήστε Enter για συνέχεια...")
+
 
                 #Ελεγχος για μη έγκυρη επιλογή αλγορίθμου
                 else:
 
                     print("Μη έγκυρη επιλογή, δοκίμασε ξανά.")
-                    hashFileSelect=input()
+                    hashFileSelect=int(input("--->"))
                     
             else:
                 print("Δεν υπάρχουν αρχεία hash για έλεγχο ακεραιότητας, υπολόγισε πρώτα ένα hash.")
                 continue
         else:
             print("Η ταυτοποίηση με 2FA απέτυχε, δεν μπορείς να κάνεις έλεγχο ακεραιότητας.")
+            input("\nΠατήστε Enter για να ξαναπροσπαθήσεις...")
             continue
 
     elif epilogi==3:
         
         if check or auth_2FA():
+            input("\nΠατήστε Enter για συνέχεια...")
             #Υπολογισμός της εντροπίας του αρχείου και εμφάνιση του αποτελέσματος
             entropy=calculate_entyropy(giveFile)
-            print(f"Η εντροπία του {giveFile} είναι: {entropy:.4f} ")
+            print(f"Η εντροπία του {giveFile} είναι: {entropy:.2f} ")
+            input("\nΠατήστε Enter για συνέχεια...")
+
         else:
             print("Η ταυτοποίηση με 2FA απέτυχε, δεν μπορείς να υπολογίσεις την εντροπία.")
+            input("\nΠατήστε Enter για συνέχεια...")
             continue    
     
     elif epilogi==4:
@@ -358,8 +386,10 @@ while True:
         print("Επίλεξες έλεγχο ταυτότητας με 2FA")
         if auth_2FA():
             check=True
+            input("\nΠατήστε Enter για συνέχεια...")
         else:
             check=False
+            input("\nΠατήστε Enter και ξανα προσπαθήστε...")
 
 
     #Επιλογή έξοδος από το πρόγραμμα
@@ -370,6 +400,7 @@ while True:
     #Ελεγχος για μη έγκυρη επιλογή στο menu
     else:
         print("Μη έγκυρη επιλογή, δοκίμασε ξανά.")
+        input("\nΠατήστε Enter για να εισάγετε σωστή επιλογή...")
         continue
        
 
