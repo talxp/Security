@@ -198,7 +198,7 @@ while True:
     if epilogi==1:
         
         if check or auth_2FA():
-            input("\nΠατήστε Enter για συνέχεια...")
+            input("\nΠατήστε Enter για να υπολογίσετε το hash...")
             menu_algorithms()
             #Επιλογή αλγορίθμου και υπολογισμός hash
             algSelect=int(input("--->"))
@@ -292,7 +292,7 @@ while True:
     elif epilogi==2:
         
         if check or auth_2FA():
-            input("\nΠατήστε Enter για συνέχεια...")
+            input("\nΠατήστε Enter για να κάνετε έλεγχο ακεραιότητας...")
             #Έλεγχος για αρχεία hash στον τρέχοντα φάκελο 
             hashFiles = [f for f in os.listdir() if f.endswith(".hash")]
 
@@ -368,7 +368,7 @@ while True:
     elif epilogi==3:
         
         if check or auth_2FA():
-            input("\nΠατήστε Enter για συνέχεια...")
+            input("\nΠατήστε Enter για να υπολογίσετε την εντροπία του αρχείου...")
             #Υπολογισμός της εντροπίας του αρχείου και εμφάνιση του αποτελέσματος
             entropy=calculate_entyropy(giveFile)
             print(f"Η εντροπία του {giveFile} είναι: {entropy:.2f} ")

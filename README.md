@@ -1,7 +1,7 @@
 ©Copyright Athanasios Alexopoulos
 
 -This is a source code written in python.  
--Designed to simply demonstrate how hash encryption algorithms work.  
+-Designed to simply demonstrate how hash algorithms work.  
 -It also calculates file entropy and performs file integrity checks.  
 -Finally, it adds a salt to each file to demonstrate this technique.                                                                                                                                                     
 
